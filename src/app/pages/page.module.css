@@ -1,0 +1,7 @@
+.container {
+    display: flex;              /* ativa o flexbox */
+      justify-content: center;    /* centraliza na horizontal */
+      align-items: center;        /* centraliza na vertical */
+      height: 100vh;              /* ocupa a tela toda */
+      flex-direction: column; 
+    }
