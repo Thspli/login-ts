@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation"; // <- importa o router
 import {
   Button, TextField, Modal, Box,
   IconButton, Card, CardContent, Typography, Stack
@@ -15,6 +16,8 @@ interface Pessoa {
 }
 
 export default function PessoasPage() {
+  const router = useRouter(); // <- inicializa o router
+
   const [pessoas, setPessoas] = useState<Pessoa[]>([]);
   const [open, setOpen] = useState(false);
   const [editPessoa, setEditPessoa] = useState<Pessoa | null>(null);
@@ -26,10 +29,14 @@ export default function PessoasPage() {
   // Pega o token JWT do localStorage
   const [token, setToken] = useState<string | null>(null);
   useEffect(() => {
-    setToken(localStorage.getItem("token"));
-  }, []);
+    const t = localStorage.getItem("token");
+    if (!t) {
+      router.replace("/login"); // <- redireciona se não tiver token
+    } else {
+      setToken(t);
+    }
+  }, [router]);
 
-  // Busca pessoas usando o JWT
   const fetchPessoas = async () => {
     if (!token) return;
     const res = await fetch("/api/pessoas", {
@@ -43,7 +50,6 @@ export default function PessoasPage() {
     if (token) fetchPessoas();
   }, [token]);
 
-  // Adicionar ou editar pessoa
   const handleSave = async () => {
     if (!token) return;
 

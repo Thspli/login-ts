@@ -23,12 +23,23 @@ export async function POST(req: NextRequest) {
 
     // Gera JWT
     const token = jwt.sign(
-      { id: user.id, email: user.email }, 
-      JWT_SECRET, 
+      { id: user.id, email: user.email },
+      JWT_SECRET,
       { expiresIn: "1h" } // token válido por 1 hora
     );
 
-    return NextResponse.json({ token });
+    // Cria resposta
+    const res = NextResponse.json({ token });
+
+    // Seta cookie com token
+    res.cookies.set("token", token, {
+      httpOnly: true, // Não acessível pelo JS no browser
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      maxAge: 60 * 60, // 1 hora
+    });
+
+    return res;
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 400 });
   }
